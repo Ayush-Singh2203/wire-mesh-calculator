@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Area, Price and Wire Mesh Calculator</title>
+<style>
+:root{color-scheme:light;--bg:#f4f5f7;--card:#fff;--tx:#1b1f24;--mu:#5b6573;--bd:#d9dde3;--ac:#0b5cad;--ac2:#e7f0fb;--rs:#eef7ee;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#111418;--card:#1b2027;--tx:#e8ebef;--mu:#9aa5b3;--bd:#323a45;--ac:#6db0f5;--ac2:#1c2b3d;--rs:#1b2b1f}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#111418;--card:#1b2027;--tx:#e8ebef;--mu:#9aa5b3;--bd:#323a45;--ac:#6db0f5;--ac2:#1c2b3d;--rs:#1b2b1f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px}
+h1{font-size:1.4rem;margin:8px 0 4px}
+p.sub{color:var(--mu);margin:0 0 14px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tabs button{flex:1 1 auto;padding:10px 12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;font:inherit;cursor:pointer}
+.tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:14px}
+.card h2{font-size:1.05rem;margin:0 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+label{display:block;font-size:.85rem;color:var(--mu);margin-bottom:3px}
+input,select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+.res{margin-top:12px;background:var(--rs);border-radius:8px;padding:10px 12px;font-weight:600}
+.res div{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
+.res span:first-child{font-weight:400;color:var(--mu)}
+.f{font-size:.82rem;color:var(--mu);margin:10px 0 0;background:var(--ac2);padding:8px 10px;border-radius:8px}
+.pane{display:none}.pane.on{display:block}
+</style>
+</head>
+<body>
+<main>
+<h1>Area, Price and Wire Mesh Calculator</h1>
+<p class="sub">Factors used: 1 ft = 0.3048 m, 1 sq m = 10.764 sq ft</p>
+
+<div class="tabs" id="tabs">
+<button class="on" data-t="p1">Area</button>
+<button data-t="p2">Price</button>
+<button data-t="p3">Wire mesh</button>
+<button data-t="p5">Weld mesh</button>
+<button data-t="p6">Chain link</button>
+<button data-t="p4">Sheets</button>
+</div>
+
+<section class="pane on" id="p1">
+<div class="card"><h2>Length x Width to sq ft and sq m</h2>
+<div class="grid">
+<div><label>Length</label><input id="a_l" type="number" step="any" inputmode="decimal"></div>
+<div><label>Width</label><input id="a_w" type="number" step="any" inputmode="decimal"></div>
+<div><label>Unit</label><select id="a_u"><option value="ft">Feet</option><option value="m">Meter</option></select></div>
+</div>
+<div class="res" id="a_r"></div>
+<div class="f">Feet to meter = ft x 0.3048. Meter to feet = m / 0.3048.</div></div>
+<div class="card"><h2>Length converter</h2>
+<div class="grid">
+<div><label>Meter</label><input id="c_m" type="number" step="any" inputmode="decimal"></div>
+<div><label>Feet</label><input id="c_f" type="number" step="any" inputmode="decimal"></div>
+<div><label>Sq m</label><input id="c_sm" type="number" step="any" inputmode="decimal"></div>
+<div><label>Sq ft</label><input id="c_sf" type="number" step="any" inputmode="decimal"></div>
+</div>
+<div class="f">Sq m to sq ft = sq m x 10.764. Sq ft to sq m = sq ft / 10.764.</div></div>
+</section>
+
+<section class="pane" id="p2">
+<div class="card"><h2>Price per sq m and per sq ft</h2>
+<div class="grid">
+<div><label>Price per sq m</label><input id="p_sm" type="number" step="any" inputmode="decimal"></div>
+<div><label>Price per sq ft</label><input id="p_sf" type="number" step="any" inputmode="decimal"></div>
+</div>
+<div class="f">Price per sq ft = price per sq m / 10.764. Price per sq m = price per sq ft x 10.764. Type in either box and the other updates.</div></div>
+</section>
+
+<section class="pane" id="p3">
+<div class="card"><h2>1. Wire mesh weight (kg per sq m)</h2>
+<div class="grid">
+<div><label>Mesh (per inch)</label><input id="w1_m" type="number" step="any" inputmode="decimal"></div>
+<div><label>Wire dia (mm)</label><input id="w1_d" type="number" step="any" inputmode="decimal"></div>
+<div><label>Length (optional)</label><input id="w1_l" type="number" step="any" inputmode="decimal"></div>
+<div><label>Width (optional)</label><input id="w1_w" type="number" step="any" inputmode="decimal"></div>
+<div><label>Unit</label><select id="w1_u"><option value="m">Meter</option><option value="ft">Feet</option></select></div>
+</div>
+<div class="res" id="w1_r"></div>
+<div class="f">Weight = Mesh x (Wire dia)^2 / 2</div></div>
+
+<div class="card"><h2>2. Opening of wire mesh (mm)</h2>
+<div class="grid">
+<div><label>Mesh (per inch)</label><input id="w2_m" type="number" step="any" inputmode="decimal"></div>
+<div><label>Wire dia (mm)</label><input id="w2_d" type="number" step="any" inputmode="decimal"></div>
+</div>
+<div class="res" id="w2_r"></div>
+<div class="f">Opening = 25.4 / Mesh - Wire dia</div></div>
+
+</section>
+
+<section class="pane" id="p5">
+<div class="card"><h2>Weld mesh weight</h2>
+<div class="grid">
+<div><label>Opening (mm)</label><input id="wm_m" type="number" step="any" inputmode="decimal"></div>
+<div><label>Wire dia (mm)</label><input id="wm_d" type="number" step="any" inputmode="decimal"></div>
+<div><label>Length (optional)</label><input id="wm_l" type="number" step="any" inputmode="decimal"></div>
+<div><label>Width (optional)</label><input id="wm_w" type="number" step="any" inputmode="decimal"></div>
+<div><label>Unit</label><select id="wm_u"><option value="ft">Feet</option><option value="m">Meter</option></select></div>
+</div>
+<div class="res" id="wm_r"></div>
+<div class="f">Weight = 12.7 x (Wire dia)^2 / (Opening + Wire dia) (kg per sq m)</div></div>
+
+<div class="card"><h2>Rate from supplier kg rate and roll weight</h2>
+<div class="grid">
+<div><label>Supplier rate per kg</label><input id="r_kg" type="number" step="any" inputmode="decimal"></div>
+<div><label>Weight per roll (kg)</label><input id="r_rw" type="number" step="any" inputmode="decimal"></div>
+<div><label>Roll length</label><input id="r_l" type="number" step="any" inputmode="decimal"></div>
+<div><label>Roll width</label><input id="r_w" type="number" step="any" inputmode="decimal"></div>
+<div><label>Unit</label><select id="r_u"><option value="ft">Feet</option><option value="m">Meter</option></select></div>
+</div>
+<div class="res" id="r_r"></div>
+<div class="f">Rate per roll = Rate per kg x Weight per roll<br>Rate per sq m = Rate per roll / Roll area in sq m<br>Rate per sq ft = Rate per sq m / 10.764</div></div>
+</section>
+
+<section class="pane" id="p6">
+<div class="card"><h2>Chain link weight</h2>
+<div class="grid">
+<div><label>Opening (inch)</label><input id="cl_o" type="number" step="any" inputmode="decimal"></div>
+<div><label>Wire dia (mm)</label><input id="cl_d" type="number" step="any" inputmode="decimal"></div>
+<div><label>Length</label><input id="cl_l" type="number" step="any" inputmode="decimal"></div>
+<div><label>Width</label><input id="cl_w" type="number" step="any" inputmode="decimal"></div>
+<div><label>Unit</label><select id="cl_u"><option value="ft">Feet</option><option value="m">Meter</option></select></div>
+</div>
+<div class="res" id="cl_r"></div>
+<div class="f">Weight (kg) = {[(1 / Opening inch) x (Wire dia)^2] / 20} x Length ft x Width ft</div></div>
+
+<div class="card"><h2>Rate from supplier kg rate and roll weight</h2>
+<div class="grid">
+<div><label>Supplier rate per kg</label><input id="cr_kg" type="number" step="any" inputmode="decimal"></div>
+<div><label>Weight per roll (kg)</label><input id="cr_rw" type="number" step="any" inputmode="decimal"></div>
+<div><label>Roll length</label><input id="cr_l" type="number" step="any" inputmode="decimal"></div>
+<div><label>Roll width</label><input id="cr_w" type="number" step="any" inputmode="decimal"></div>
+<div><label>Unit</label><select id="cr_u"><option value="ft">Feet</option><option value="m">Meter</option></select></div>
+</div>
+<div class="res" id="cr_r"></div>
+<div class="f">Rate per roll = Rate per kg x Weight per roll<br>Rate per sq ft = Rate per roll / Roll area in sq ft<br>Rate per sq m = Rate per sq ft x 10.764</div></div>
+</section>
+
+<section class="pane" id="p4">
+<div class="card"><h2>3. Plain sheet weight</h2>
+<div class="grid">
+<div><label>Material</label><select id="s3_f"><option value="7.85">MS (7.85)</option><option value="7.9296">SS (7.9296)</option><option value="2.7008">Aluminum (2.7008)</option></select></div>
+<div><label>Thickness (mm)</label><input id="s3_t" type="number" step="any" inputmode="decimal"></div>
+<div><label>Length</label><input id="s3_l" type="number" step="any" inputmode="decimal"></div>
+<div><label>Width</label><input id="s3_w" type="number" step="any" inputmode="decimal"></div>
+<div><label>Unit</label><select id="s3_u"><option value="mm">mm</option><option value="m">Meter</option><option value="ft">Feet</option></select></div>
+</div>
+<div class="res" id="s3_r"></div>
+<div class="f">Weight (kg) = Material factor x Thickness mm x Length m x Width m</div></div>
+
+<div class="card"><h2>4. Perforated sheet weight</h2>
+<div class="grid">
+<div><label>Material</label><select id="s4_f"><option value="7.85">MS (7.85)</option><option value="7.9296">SS (7.9296)</option><option value="2.7008">Aluminum (2.7008)</option></select></div>
+<div><label>Thickness (mm)</label><input id="s4_t" type="number" step="any" inputmode="decimal"></div>
+<div><label>Length</label><input id="s4_l" type="number" step="any" inputmode="decimal"></div>
+<div><label>Width</label><input id="s4_w" type="number" step="any" inputmode="decimal"></div>
+<div><label>Unit</label><select id="s4_u"><option value="mm">mm</option><option value="m">Meter</option><option value="ft">Feet</option></select></div>
+<div><label>Hole dia (mm)</label><input id="s4_h" type="number" step="any" inputmode="decimal"></div>
+<div><label>Pitch (mm)</label><input id="s4_p" type="number" step="any" inputmode="decimal"></div>
+<div><label>Supplier rate per sq ft (optional)</label><input id="s4_rate" type="number" step="any" inputmode="decimal"></div>
+</div>
+<div class="res" id="s4_r"></div>
+<div class="f">Rate per nos = Length m x Width m x 10.764 x Supplier rate per sq ft<br>Open area % = 90.69 x (Hole dia)^2 / (Pitch)^2<br>Perforated weight = Plain sheet weight - Weight of open area</div></div>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+document.addEventListener("wheel",e=>{const a=document.activeElement;if(a&&a.type==="number")a.blur()},{passive:true});
+document.addEventListener("keydown",e=>{const a=document.activeElement;if(a&&a.type==="number"&&(e.key==="ArrowUp"||e.key==="ArrowDown"))e.preventDefault()});
+const n=id=>{const v=parseFloat($(id).value);return isFinite(v)?v:null};
+const f=(x,d=3)=>(+x.toFixed(d)).toLocaleString("en-IN",{maximumFractionDigits:d});
+const row=(a,b)=>"<div><span>"+a+"</span><span>"+b+"</span></div>";
+const FT=0.3048,SQ=10.764;
+
+document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll("#tabs button").forEach(x=>x.classList.remove("on"));
+ document.querySelectorAll(".pane").forEach(x=>x.classList.remove("on"));
+ b.classList.add("on");$(b.dataset.t).classList.add("on");
+});
+function on(ids,fn){ids.forEach(i=>$(i).addEventListener("input",fn))}
+
+on(["a_l","a_w","a_u"],()=>{
+ const l=n("a_l"),w=n("a_w");
+ if(l===null||w===null){$("a_r").innerHTML="";return}
+ let sf,sm;
+ if($("a_u").value==="ft"){sf=l*w;sm=sf/SQ}else{sm=l*w;sf=sm*SQ}
+ const lm=$("a_u").value==="ft"?l*FT:l, wm=$("a_u").value==="ft"?w*FT:w;
+ $("a_r").innerHTML=row("Area in sq ft",f(sf))+row("Area in sq m",f(sm))+row("Size in meter",f(lm)+" x "+f(wm))+row("Size in feet",f(lm/FT)+" x "+f(wm/FT));
+});
+
+function link(a,b,fn){
+ $(a).addEventListener("input",()=>{const v=n(a);$(b).value=v===null?"":+fn(v).toFixed(4)});
+}
+link("c_m","c_f",v=>v/FT);link("c_f","c_m",v=>v*FT);
+link("c_sm","c_sf",v=>v*SQ);link("c_sf","c_sm",v=>v/SQ);
+link("p_sm","p_sf",v=>v/SQ);link("p_sf","p_sm",v=>v*SQ);
+
+function total(p,kgsqm){
+ const l=n(p+"_l"),w=n(p+"_w");
+ let h=row("Weight",f(kgsqm)+" kg/sq m");
+ if(l!==null&&w!==null){
+  const ft=$(p+"_u").value==="ft";
+  const sm=ft?l*w*FT*FT:l*w;
+  h+=row("Area",f(sm)+" sq m / "+f(sm*SQ)+" sq ft")+row("Total weight",f(kgsqm*sm)+" kg");
+ }
+ return h;
+}
+on(["w1_m","w1_d","w1_l","w1_w","w1_u"],()=>{
+ const m=n("w1_m"),d=n("w1_d");
+ $("w1_r").innerHTML=(m===null||d===null)?"":total("w1",m*d*d/2);
+});
+on(["w2_m","w2_d"],()=>{
+ const m=n("w2_m"),d=n("w2_d");
+ $("w2_r").innerHTML=(m===null||d===null||m===0)?"":row("Opening",f(25.4/m-d)+" mm");
+});
+on(["wm_m","wm_d","wm_l","wm_w","wm_u"],()=>{
+ const o=n("wm_m"),d=n("wm_d");
+ $("wm_r").innerHTML=(o===null||d===null||o+d===0)?"":total("wm",12.7*d*d/(o+d));
+});
+on(["r_kg","r_rw","r_l","r_w","r_u"],()=>{
+ const kg=n("r_kg"),rw=n("r_rw"),l=n("r_l"),w=n("r_w");
+ if([kg,rw,l,w].some(x=>x===null)){$("r_r").innerHTML="";return}
+ const ft=$("r_u").value==="ft";
+ const sm=ft?l*w*FT*FT:l*w;
+ if(sm===0){$("r_r").innerHTML="";return}
+ const roll=kg*rw,psm=roll/sm;
+ $("r_r").innerHTML=row("Roll area",f(sm)+" sq m / "+f(sm*SQ)+" sq ft")+row("Weight per sq m",f(rw/sm)+" kg")+row("Rate per roll","\u20b9 "+f(roll,2))+row("Rate per sq m","\u20b9 "+f(psm,2))+row("Rate per sq ft","\u20b9 "+f(psm/SQ,2));
+});
+on(["cl_o","cl_d","cl_l","cl_w","cl_u"],()=>{
+ const o=n("cl_o"),d=n("cl_d"),l=n("cl_l"),w=n("cl_w");
+ if(o===null||d===null||o===0){$("cl_r").innerHTML="";return}
+ const psf=(1/o)*d*d/20;
+ let h=row("Weight per sq ft",f(psf,4)+" kg")+row("Weight per sq m",f(psf*SQ)+" kg");
+ if(l!==null&&w!==null){
+  const sf=$("cl_u").value==="ft"?l*w:l*w*SQ;
+  h+=row("Area",f(sf)+" sq ft / "+f(sf/SQ)+" sq m")+row("Total weight",f(psf*sf)+" kg");
+ }
+ $("cl_r").innerHTML=h;
+});
+on(["cr_kg","cr_rw","cr_l","cr_w","cr_u"],()=>{
+ const kg=n("cr_kg"),rw=n("cr_rw"),l=n("cr_l"),w=n("cr_w");
+ if([kg,rw,l,w].some(x=>x===null)){$("cr_r").innerHTML="";return}
+ const sf=$("cr_u").value==="ft"?l*w:l*w*SQ;
+ if(sf===0){$("cr_r").innerHTML="";return}
+ const roll=kg*rw,psf=roll/sf;
+ $("cr_r").innerHTML=row("Roll area",f(sf)+" sq ft / "+f(sf/SQ)+" sq m")+row("Weight per sq ft",f(rw/sf,4)+" kg")+row("Rate per roll","\u20b9 "+f(roll,2))+row("Rate per sq ft","\u20b9 "+f(psf,2))+row("Rate per sq m","\u20b9 "+f(psf*SQ,2));
+});
+const UM={mm:0.001,m:1,ft:FT};
+on(["s3_f","s3_t","s3_l","s3_w","s3_u"],()=>{
+ const U=UM[$("s3_u").value],k=parseFloat($("s3_f").value),t=n("s3_t"),l0=n("s3_l"),w0=n("s3_w");
+ if(t===null||l0===null||w0===null){$("s3_r").innerHTML="";return}
+ const l=l0*U,w=w0*U;
+ $("s3_r").innerHTML=row("Size in meter",f(l)+" x "+f(w))+row("Weight",f(k*t*l*w)+" kg")+row("Per sq m",f(k*t)+" kg");
+});
+on(["s4_f","s4_t","s4_l","s4_w","s4_u","s4_h","s4_p","s4_rate"],()=>{
+ const U=UM[$("s4_u").value],k=parseFloat($("s4_f").value),t=n("s4_t"),l0=n("s4_l"),w0=n("s4_w"),h=n("s4_h"),p=n("s4_p");
+ const l=l0===null?null:l0*U,w=w0===null?null:w0*U;
+ if([t,l,w,h,p].some(x=>x===null)||p===0){$("s4_r").innerHTML="";return}
+ const plain=k*t*l*w,open=90.69*h*h/(p*p),wo=plain*open/100;
+ $("s4_r").innerHTML=row("Plain sheet weight",f(plain)+" kg")+row("Open area",f(open,2)+" %")+row("Weight of open area",f(wo)+" kg")+row("Perforated sheet weight",f(plain-wo)+" kg");
+ const rate=n("s4_rate");
+ if(rate!==null){
+  const sf=l*w*SQ,nos=sf*rate;
+  $("s4_r").innerHTML+=row("Sheet area",f(sf)+" sq ft")+row("Rate per nos (sheet)","\u20b9 "+f(nos,2))+row("Rate per kg","\u20b9 "+f(nos/(plain-wo),2));
+ }
+});
+</script>
+</body>
+</html>
